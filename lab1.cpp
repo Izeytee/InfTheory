@@ -73,7 +73,7 @@ std::list<double> calcMean(const std::string &fileName, const size_t symbInRaw)
 	return p;
 }
 
-double calcEntropy(std::list<double> &p, const size_t symbInRawAm)
+double calcEntropy(std::list<double> &p, size_t symbInRawAm)
 {
 	double H = 0.0;
 	for (auto &it : p)
@@ -85,15 +85,19 @@ void testAlpEntr(const std::unordered_map<char, double> &alph,
 				const std::string fileName, const size_t charsAm)
 {
 	initFile(alph, fileName, charsAm);
-	
+	/*
 	std::cout << "Alphabet is: \n";
 	for (auto &it : alph)
 		std::cout << '{' << it.first << ", " << it.second << '}';
 	std::cout << '\n';
-	
-	for (size_t symbInRawAm = 1; symbInRawAm <= 5; ++symbInRawAm)
+	*/
+	for (size_t symbInRawAm = 1; symbInRawAm <= 2; ++symbInRawAm)
 	{
 		std::list<double> p = calcMean(fileName, symbInRawAm);
+		std::cout << "probabilities: ";
+		for (auto& it : p)
+			std::cout << it << ' ';
+		std::cout << '\n';
 		std::cout << "For " << symbInRawAm << 
 			" symbols in a raw entropy equals " << calcEntropy(p, symbInRawAm) << '\n';
 	}

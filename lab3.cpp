@@ -6,32 +6,47 @@
 #include <utility>
 #include <fstream>
 #include <cmath>
+#include <iostream>
+#include <unordered_map>
+#include <list>
+#include <algorithm>
+#include <numeric>
+#include <utility>
+#include <fstream>
+#include <cmath>
+#include <cctype>
 
 constexpr int MAX_NUM_AFTER_POINT = 1e6;
 
-void initFile(const std::unordered_map<char, double> &alph, 
-			  const std::string &fileName, const size_t charsAm)
+const std::string prepareFile(const std::string &fileName)
 {
-	std::list<std::pair<char, int>> charsProbXAfterPoint;
-	std::transform(alph.cbegin(), alph.cend(), std::back_inserter(charsProbXAfterPoint),
-		[](const std::pair<char, double> &elem) 
-		{ 
-			return std::make_pair(elem.first, elem.second * MAX_NUM_AFTER_POINT);
-		});
-		
-	std::ofstream out(fileName);
-	for (size_t curCharInd = 0; curCharInd < charsAm; ++curCharInd)
+	const std::string resultFileName = "test.txt";
+	
+	std::ifstream in(fileName);
+	std::ofstream out(resultFileName);
+	
+	std::string line;
+	while(std::getline(in, line))
 	{
-		int propPointsLeft = rand() % MAX_NUM_AFTER_POINT;
-		for (auto it = charsProbXAfterPoint.cbegin();
-			it != charsProbXAfterPoint.cend(); ++it)
-			if ((propPointsLeft -= it->second) <= 0)
-			{
-				out << it->first;
-				break;
-			}
+		if (line.find("cin") != std::string::npos || 
+			line.find("cout") != std::string::npos)
+			continue;
+		if (line.find("/*") != std::string::npos)
+		{
+			while(line.find("*/") == std::string::npos)
+				std::getline(in, line);
+			continue;
+		}
+		for (auto& c : line)
+		{
+			out << c;
+		}
 	}
+	
+	in.close();
 	out.close();
+	
+	return resultFileName;
 }
 
 std::list<double> calcMean(const std::string &fileName, const size_t symbInRaw)
@@ -73,7 +88,7 @@ std::list<double> calcMean(const std::string &fileName, const size_t symbInRaw)
 	return p;
 }
 
-double calcEntropy(std::list<double> &p, const size_t symbInRawAm)
+double calcEntropy(std::list<double> &p, size_t symbInRawAm)
 {
 	double H = 0.0;
 	for (auto &it : p)
@@ -81,19 +96,13 @@ double calcEntropy(std::list<double> &p, const size_t symbInRawAm)
 	return -H / symbInRawAm;
 }
 
-void testAlpEntr(const std::unordered_map<char, double> &alph, 
-				const std::string fileName, const size_t charsAm)
+void testFile(const std::string fileName)
 {
-	initFile(alph, fileName, charsAm);
-	
-	std::cout << "Alphabet is: \n";
-	for (auto &it : alph)
-		std::cout << '{' << it.first << ", " << it.second << '}';
-	std::cout << '\n';
+	const std::string preparedFile = prepareFile(fileName);
 	
 	for (size_t symbInRawAm = 1; symbInRawAm <= 5; ++symbInRawAm)
 	{
-		std::list<double> p = calcMean(fileName, symbInRawAm);
+		std::list<double> p = calcMean(preparedFile, symbInRawAm);
 		std::cout << "For " << symbInRawAm << 
 			" symbols in a raw entropy equals " << calcEntropy(p, symbInRawAm) << '\n';
 	}
@@ -104,13 +113,7 @@ int main()
 {
 	srand(time(0));
 	
-	std::unordered_map<char, double> 
-		alphEq{{'a', 0.25}, {'b', 0.25}, {'c', 0.25}, {'d', 0.25}},
-		alphDif{{'a', 0.33}, {'b', 0.13}, {'c', 0.07}, {'d', 0.47}};
-	
-	testAlpEntr(alphEq, "alphEq.txt", 50000);
-	testAlpEntr(alphDif, "alphDif.txt", 50000);
-	
+	testFile("lab1.cpp");
 	
 	return 0;
 }
