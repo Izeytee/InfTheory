@@ -25,7 +25,7 @@ const std::string prepareFile(const std::string &fileName)
 			if (ispunct(c))
 				c = '.';
 			else if (isupper(c))
-				tolower(c);
+				c = tolower(c);
 			out << c;
 		}
 	}
