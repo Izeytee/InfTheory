@@ -94,8 +94,7 @@ std::list<double> calcMean(const std::string &fileName, const size_t symbInRaw)
 
 void printNodes(std::multiset<Node> &n)
 {
-    for (auto& it : n)
-        std::cout << it.c << ' ' << it.p << ' ' << it.code << '\n';
+    std::for_each(n.crbegin(), n.crend(), [](const Node &it) { std::cout << it.c << '\t' << it.p << '\t' << it.code << '\n'; });
 }
 
 std::multiset<Node> calcNodes(const std::string &fileName)
@@ -200,12 +199,13 @@ void testFile(const std::string fileName)
 	{
     	std::list<double> p = calcMean(preparedFile, 5);
     	double H = calcEntropy(p, 5);
+		std::cout << "H: " << H << '\n';
     	std::cout << "r: " << L - H << '\n';
 	}
 
 	writeEncodedFile(n, "test.txt");
 
-	for (size_t symbInRawAm = 1; symbInRawAm <= 8; ++symbInRawAm)
+	for (size_t symbInRawAm = 1; symbInRawAm <= 5; ++symbInRawAm)
 	{
 		std::list<double> p = calcMean("res.txt", symbInRawAm);
 		std::cout << "For " << symbInRawAm << 
